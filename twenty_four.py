@@ -27,7 +27,7 @@ __plugin_meta__ = PluginMetadata(
     """.strip(),
     extra=PluginExtraData(
         author="molanp",
-        version="0.1",
+        version="0.2",
         introduction="24点小游戏，可以赚取金币",
     ).to_dict(),
 )
@@ -169,7 +169,7 @@ async def _(session: Uninfo):
     solution = await find_solution(numbers)
     twenty_four[user_id] = (solution, numbers)
     await UniMessage(
-        f"给出的数字组合：{numbers}\n请输入表达式使其结果为 24。(若无解，请输入“无解”)"
+        f"给出的数字组合：{numbers}\n请输入表达式(由加减乘除和括号组成)使其结果为 24。(若无解，请输入“无解”)"
     ).finish(reply_to=True)
 
 
@@ -177,7 +177,7 @@ async def _(session: Uninfo):
 async def _(session: Uninfo, msg: UniMsg):
     user_id = session.user.id
     solution, numbers = twenty_four[user_id]
-    expr = msg.extract_plain_text().strip()
+    expr = msg.extract_plain_text().strip().replace("（", "(").replace("）", ")")
 
     async def fail(msg_text):
         if not await reduce_gold(user_id, 10):
