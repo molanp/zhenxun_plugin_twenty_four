@@ -130,14 +130,15 @@ def check_valid(expr):
 async def find_solution(numbers):
     operators = ["+", "-", "*", "/"]
     perms = itertools.permutations(numbers)
-    exprs = itertools.product(operators, repeat=4)
+    # 注意：exprs 是迭代器，用在内层循环时需要每次重新创建
     for perm in perms:
-        for expr in exprs:
+        for expr in itertools.product(operators, repeat=3):
+            op1, op2, op3 = expr
             for exp in (
-                f"(({perm[0]}{expr[0]}{perm[1]}){expr[1]}{perm[2]}){expr[2]}{perm[3]}",
-                f"({perm[0]}{expr[0]}{perm[1]}){expr[1]}({perm[2]}{expr[2]}{perm[3]})",
-                f"{perm[0]}{expr[0]}({perm[1]}{expr[1]}({perm[2]}{expr[2]}{perm[3]}))",
-                f"{perm[0]}{expr[0]}({perm[1]}{expr[1]}{perm[2]}){expr[2]}{perm[3]}",
+                f"(({perm[0]} {op1} {perm[1]}) {op2} {perm[2]}) {op3} {perm[3]}",
+                f"({perm[0]} {op1} {perm[1]}) {op2} ({perm[2]} {op3} {perm[3]})",
+                f"{perm[0]} {op1} ({perm[1]} {op2} ({perm[2]} {op3} {perm[3]}))",
+                f"{perm[0]} {op1} ({perm[1]} {op2} {perm[2]}) {op3} {perm[3]}",
             ):
                 with contextlib.suppress(Exception):
                     result = calc(exp)
@@ -209,7 +210,7 @@ async def _(session: Uninfo, msg: UniMsg):
         else:
             await fail("回答错误.已扣除你10金币")
     else:
-        await fail("回答错误：表达式无效.已扣除你10金币")
+        await fail("回答错误：非法表达式.已扣除你10金币")
 
 
 @stop.handle()
