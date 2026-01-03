@@ -75,12 +75,12 @@ def isint(num_str: Any) -> bool:
         return False
 
 
-def calc(expr) -> float | None:
+def calc(expr) -> float:
     expr = expr.replace("\\", "")
     try:
         return simple_eval(expr)
     except Exception:
-        return None
+        return 0
 
 
 def check_valid(expr):
@@ -199,7 +199,7 @@ async def _(session: Uninfo, msg: UniMsg):
             await UniMessage("回答正确, 奖励你5金币").finish(reply_to=True)
     elif check_valid(expr):
         result = calc(expr)
-        if result is None:
+        if not result:
             await fail("回答错误：表达式无效.已扣除你10金币")
         elif (result == 24 or 0 < 24 - result < 1e-13) and contains_all_numbers(
             expr, numbers
