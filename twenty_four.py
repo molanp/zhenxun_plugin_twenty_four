@@ -210,7 +210,7 @@ async def _(session: Uninfo, msg: UniMsg):
         else:
             await fail("回答错误.已扣除你10金币")
     else:
-        await fail("回答错误：表达式无效.已扣除你10金币")
+        await fail("回答错误：非法表达式.已扣除你10金币")
 
 
 @stop.handle()
